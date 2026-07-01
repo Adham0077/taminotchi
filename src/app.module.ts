@@ -42,6 +42,7 @@ import { MessageModule } from './api/message/message.module';
 import { PrivateChatModule } from './api/private-chat/private-chat.module';
 import { NotificationModule } from './api/notification/notification.module';
 import { AuthModule } from './api/auth/auth.module';
+import { PingService } from './ping/ping.service';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { AuthModule } from './api/auth/auth.module';
       isGlobal: true,
       envFilePath: ['.env'], // kerak bo‘lsa
     }),
+    ScheduleModule.forRoot(),
 
     TypeOrmModule.forRootAsync({
       useFactory: async () => {
@@ -134,7 +136,7 @@ import { AuthModule } from './api/auth/auth.module';
   ],
   providers: [
     LanguageMiddleware,
-
+    PingService
   ],
 })
 export class AppModule implements NestModule {
