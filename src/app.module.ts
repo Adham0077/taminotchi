@@ -79,7 +79,7 @@ import { AuthModule } from './api/auth/auth.module';
           retryAttempts: 1,
           synchronize: true, // !isProd  prod’da false bo‘ladi
           logging: ['error', 'warn'],
-          ssl: false,
+          ssl: { rejectUnauthorized: false },
           // ssl: isProd
           //   ? { rejectUnauthorized: false }
           //   : false,
