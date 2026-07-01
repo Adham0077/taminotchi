@@ -1,0 +1,69 @@
+import { Column, Entity, JoinColumn, ManyToOne, Index, OneToOne, OneToMany } from 'typeorm';
+import { BaseEntity } from './base.entity';
+import { CategoryEntity } from './category.entity';
+import { PhotoEntity } from './photo.entity';
+import { MarketEntity } from './market.entity';
+import { CommentEntity } from './comment.entity';
+import { SupCategoryEntity } from './sup-category.entity';
+
+@Entity('product')
+export class ProductEntity extends BaseEntity {
+    @Column({ type: 'varchar' })
+    name: string;
+
+    @Index()
+    @Column({ type: 'uuid' })
+    categoryId: string;
+
+    @ManyToOne(() => CategoryEntity, (c) => c.products, { onDelete: 'RESTRICT' })
+    @JoinColumn({ name: 'categoryId' })
+    category: CategoryEntity;
+
+    @Index()
+    @Column({ type: 'uuid', nullable: true })
+    supCategoryId: string | null;
+
+    @ManyToOne(() => SupCategoryEntity, (sc) => sc.products, { nullable: true, onDelete: 'SET NULL' })
+    @JoinColumn({ name: 'supCategoryId' })
+    supCategory: SupCategoryEntity | null;
+
+    @Column({ type: 'varchar' })
+    price: string;
+
+    @Column({ type: 'int', default: 0 })
+    amount: number;
+
+    @Column({ type: 'varchar', nullable: true })
+    description: string | null;
+
+    @OneToMany(() => PhotoEntity, (p) => p.product)
+    photos: PhotoEntity[];
+
+    @Index()
+    @Column({ type: 'uuid' })
+    marketId: string;
+
+    @ManyToOne(() => MarketEntity, (m) => m.products, { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'marketId' })
+    market: MarketEntity;
+
+    @Index()
+    @Column({ type: 'uuid', nullable: true, unique: true })
+    commentId: string | null;
+
+    @OneToOne(() => CommentEntity, { nullable: true, onDelete: 'SET NULL' })
+    @JoinColumn({ name: 'commentId' })
+    comment: CommentEntity | null;
+
+    @Column({ type: 'boolean', default: true })
+    isActive: boolean;
+
+    @Column({ type: 'numeric', precision: 3, scale: 2, default: 0 })
+    avgRating: number;
+
+    @Column({ type: 'int', default: 0 })
+    ratingCount: number;
+
+    @Column({ type: 'boolean', default: true })
+    isVerified: boolean;
+}

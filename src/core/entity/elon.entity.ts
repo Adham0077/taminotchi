@@ -1,0 +1,69 @@
+import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, Index, OneToOne, OneToMany } from 'typeorm';
+import { BaseEntity } from './base.entity';
+import { CategoryEntity } from './category.entity';
+import { GroupEntity } from './group.entity';
+import { PhotoEntity } from './photo.entity';
+import { ClientEntity } from './client.entity';
+import { CommentEntity } from './comment.entity';
+import { ElonStatus } from 'src/common/enum/index.enum';
+import { SupCategoryEntity } from './sup-category.entity';
+
+@Entity('elon')
+export class ElonEntity extends BaseEntity {
+    @Column({ type: 'text' })
+    text: string;
+
+    @Column({ type: 'varchar', nullable: true })
+    adressname: string | null;
+
+    @Index()
+    @Column({ type: 'uuid' })
+    categoryId: string;
+
+    @ManyToOne(() => CategoryEntity, (c) => c.elons, { onDelete: 'RESTRICT' })
+    @JoinColumn({ name: 'categoryId' })
+    category: CategoryEntity;
+
+    @Index()
+    @Column({ type: 'uuid', nullable: true })
+    supCategoryId: string | null;
+
+    @ManyToOne(() => SupCategoryEntity, (sc) => sc.elons, { nullable: true, onDelete: 'SET NULL' })
+    @JoinColumn({ name: 'supCategoryId' })
+    supCategory: SupCategoryEntity | null;
+
+    @Column({ type: 'numeric', precision: 12, scale: 2, nullable: true })
+    price: string | null;
+
+    @Column({ type: 'enum', enum: ElonStatus, default: ElonStatus.NEGOTIATION, })
+    status: ElonStatus;
+
+    @Column({ type: 'int', default: 0 })
+    answerCount: number;
+
+    // ── ManyToMany: Elon bir nechta guruhga tegishli bo'lishi mumkin ─
+    @ManyToMany(() => GroupEntity, (g) => g.elons)
+    groups: GroupEntity[];
+
+    @OneToMany(() => PhotoEntity, (p) => p.elon)
+    photos: PhotoEntity[];
+
+    @Index()
+    @Column({ type: 'uuid' })
+    clientId: string;
+
+    @ManyToOne(() => ClientEntity, { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'clientId' })
+    client: ClientEntity;
+
+    @Index()
+    @Column({ type: 'uuid', unique: true, nullable: true })
+    commentId: string | null;
+
+    @OneToOne(() => CommentEntity, { onDelete: 'CASCADE', nullable: true })
+    @JoinColumn({ name: 'commentId' })
+    comment: CommentEntity | null;
+
+    @Column({ type: 'boolean', default: true })
+    isVerified: boolean;
+}

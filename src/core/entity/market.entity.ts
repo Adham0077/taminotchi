@@ -1,0 +1,57 @@
+import { Column, Entity, ManyToOne, JoinColumn, Index, OneToMany, ManyToMany } from 'typeorm';
+import { Exclude } from 'class-transformer';
+import { BaseEntity } from './base.entity';
+import { AdressEntity } from './adress.entity';
+import { ProductEntity } from './product.entity';
+import { GroupEntity } from './group.entity';
+import { PrivateChatEntity } from './private-chat.entity';
+import { LanguageType, UserRole } from 'src/common/enum/index.enum';
+
+@Entity('market')
+export class MarketEntity extends BaseEntity {
+    @Column({ type: 'varchar', nullable: true })
+    name: string | null;
+
+    @Index()
+    @Column({ type: 'varchar', unique: true })
+    phoneNumber: string;
+
+    @Column({ type: 'varchar', unique: true, nullable: true })
+    username: string | null;
+
+    @Column({ type: 'varchar' })
+    @Exclude({ toPlainOnly: true })
+    password: string;
+
+    @Column({ type: 'varchar', nullable: true })
+    photoPath: string | null;
+
+    @Column({ type: 'uuid', nullable: true })
+    adressId: string | null;
+
+    @ManyToOne(() => AdressEntity, (a) => a.markets, { nullable: true, onDelete: 'SET NULL' })
+    @JoinColumn({ name: 'adressId' })
+    adress: AdressEntity | null;
+
+    @Column({ type: 'enum', enum: LanguageType, default: LanguageType.UZ })
+    language: LanguageType;
+
+    @Column({ type: 'boolean', default: true })
+    isActive: boolean;
+
+    @Column({ type: 'varchar', nullable: true })
+    fcmToken: string | null;
+
+    @Column({ type: 'enum', enum: UserRole, default: UserRole.MARKET })
+    role: UserRole;
+
+    @OneToMany(() => ProductEntity, (p) => p.market)
+    products: ProductEntity[];
+
+    // ✅ ManyToMany: market ko'p guruhda bo'la oladi
+    @ManyToMany(() => GroupEntity, (g) => g.markets)
+    groups: GroupEntity[];
+
+    @OneToMany(() => PrivateChatEntity, (pc) => pc.market)
+    privateChats: PrivateChatEntity[];
+}
